@@ -94,17 +94,44 @@ namespace GSharp
 
         public static Command ParseLine(string _line)
         {
+            Command result = new Command();
             string text = _line;
             string code = "";
             string comment = "";
-            string[] Parameters;
+            string[] parameters = null; ;
+            string t = text;
 
-            if (text.Contains(";"))
+            if (t.Contains(";"))
             {
-                code
+                string[] tt = t.Split(';');
+                t = tt[0];
+                if (tt.Length > 1)
+                {
+                    for (int i = 1; i < tt.Length; i++)
+                    {
+                        comment += tt[i];
+                    }
+                }
             }
 
-            return null;
+            string[] cc = t.Split(' ');
+            code = cc[0].ToUpper();
+
+            if (cc.Length > 1)
+            {
+                parameters = new string[cc.Length - 1];
+                for (int i = 1; i < cc.Length; i++)
+                {
+                    parameters[i - 1] = cc[i].ToUpper();
+                }
+            }
+
+            result.Text = text;
+            result.Code = code;
+            result.Comment = comment;
+            result.Parameters = parameters;
+
+            return result;
         }
     }
 
@@ -113,6 +140,6 @@ namespace GSharp
         public string Text;
         public string Code;
         public string Comment;
-        public string[] Paramters;
+        public string[] Parameters;
     }
 }
