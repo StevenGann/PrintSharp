@@ -92,6 +92,22 @@ namespace GSharp
             { "M400", "", "Wait For Current Moves to Finish" }
         };
 
+        public static string GetDescription(string _command)
+        {
+            string result = null;
+            string command = _command.ToUpper();
+            for(int i = 0; i < table.Length; i++)
+            {
+                if (table[i, 0] == command)
+                {
+                    result = table[i, 0];
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         public static Command ParseLine(string _line)
         {
             Command result = new Command();
@@ -119,10 +135,27 @@ namespace GSharp
 
             if (cc.Length > 1)
             {
-                parameters = new string[cc.Length - 1];
                 for (int i = 1; i < cc.Length; i++)
                 {
-                    parameters[i - 1] = cc[i].ToUpper();
+                    cc[i] = cc[i].Trim();
+                }
+
+                int paramcount = 0;
+                for (int i = 1; i < cc.Length; i++)
+                {
+                    if (cc[i].Length != 0)
+                    {
+                        paramcount++;
+                    }
+                }
+
+                parameters = new string[paramcount];
+                for (int i = 1; i < cc.Length; i++)
+                {
+                    if (cc[i].Length != 0)
+                    {
+                        parameters[i - 1] = cc[i].ToUpper();
+                    }
                 }
             }
 
@@ -137,9 +170,45 @@ namespace GSharp
 
     public class Command
     {
-        public string Text;
-        public string Code;
-        public string Comment;
-        public string[] Parameters;
+        public string Text = null;
+        public string Code = null;
+        public string Comment = null;
+        public string[] Parameters = null;
+        public bool Debug = false;
+
+        public override string ToString()
+        {
+            string result = "";
+            if (Code != null) { result += Code; }
+
+            if (Parameters != null)
+            {
+                for (int i = 0; i < Parameters.Length; i++)
+                {
+                    result += " ";
+                    if (Debug) { result += "("; }
+                    result += Parameters[i];
+                    if (Debug) { result += ")"; }
+                }
+            }
+
+            if(Comment != null)
+            {
+                result += " ;" + Comment;
+                if(Debug && Text != null)
+                {
+                    result += " [" + Text + "]";
+                }
+            }
+            else if (Debug && Text != null)
+            {
+                result += " ;[" + Text + "]";
+            }
+
+            if(result == "")
+            { result = ";EMPTY"; }
+
+            return result;
+        }
     }
 }
