@@ -211,4 +211,11 @@ namespace GSharp
             return result;
         }
     }
+
+    public class Job
+    {
+        public string Name;
+        public string SourcePath;
+        public List<Command> Commands;
+    }
 }
