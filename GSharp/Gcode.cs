@@ -96,7 +96,7 @@ namespace GSharp
         {
             string result = null;
             string command = _command.ToUpper();
-            for(int i = 0; i < table.Length; i++)
+            for (int i = 0; i < table.Length; i++)
             {
                 if (table[i, 0] == command)
                 {
@@ -154,7 +154,7 @@ namespace GSharp
                 {
                     if (cc[i].Length != 0)
                     {
-                        parameters[i - 1] = cc[i].ToUpper();
+                        parameters[i - 1] = cc[i];//.ToUpper();
                     }
                 }
             }
@@ -192,10 +192,10 @@ namespace GSharp
                 }
             }
 
-            if(Comment != null)
+            if (Comment != null)
             {
                 result += " ;" + Comment;
-                if(Debug && Text != null)
+                if (Debug && Text != null)
                 {
                     result += " [" + Text + "]";
                 }
@@ -205,9 +205,28 @@ namespace GSharp
                 result += " ;[" + Text + "]";
             }
 
-            if(result == "")
+            if (result == "")
             { result = ";EMPTY"; }
 
+            return result;
+        }
+
+        public string GetClean()
+        {
+            string result = "";
+            if (Code != null)
+            {
+                result += Code;
+
+                if (Parameters != null)
+                {
+                    for (int i = 0; i < Parameters.Length; i++)
+                    {
+                        result += " ";
+                        result += Parameters[i];
+                    }
+                }
+            }
             return result;
         }
     }
@@ -217,5 +236,45 @@ namespace GSharp
         public string Name;
         public string SourcePath;
         public List<Command> Commands;
+        public int Index = 0;
+        public double Progress = 0;
+
+        public Command GetNextCommand()
+        {
+            Command result = Commands[Index];
+            Index++;
+            return result;
+        }
+
+        public List<Command> GetNextCommands(int _count)
+        {
+            List<Command> result = new List<Command>();
+
+            for (int i = 0; i < _count && i < Commands.Count; i++)
+            {
+                result.Add(Commands[Index]);
+                Index++;
+            }
+
+            return result;
+        }
+
+        public Command PeekNextCommand()
+        {
+            Command result = Commands[Index];
+            return result;
+        }
+
+        public List<Command> PeekNextCommands(int _count)
+        {
+            List<Command> result = new List<Command>();
+
+            for (int i = 0; i < _count && i < Commands.Count; i++)
+            {
+                result.Add(Commands[Index]);
+            }
+
+            return result;
+        }
     }
 }

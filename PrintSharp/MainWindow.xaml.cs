@@ -20,9 +20,13 @@ namespace PrintSharp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Printer printer = new Printer();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            printer.Port = "COM3";
         }
     }
 }
