@@ -26,7 +26,12 @@ namespace PrintSharp
         {
             InitializeComponent();
 
+            printer.Job = new GSharp.Job();
+            printer.Job.Load(@"C:\Users\cadik\Desktop\CFFFP_Warp_Reaction_Chamber.gcode");
+
             printer.Port = "COM3";
+
+            printer.Print();
         }
     }
 }

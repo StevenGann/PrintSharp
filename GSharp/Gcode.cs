@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -154,10 +155,11 @@ namespace GSharp
                 {
                     if (cc[i].Length != 0)
                     {
-                        parameters[i - 1] = cc[i];//.ToUpper();
+                        parameters[i - 1] = cc[i];//.ToUpper(); //ToUpper limits M117 :(
                     }
                 }
             }
+            else { code = null; }
 
             result.Text = text;
             result.Code = code;
@@ -275,6 +277,27 @@ namespace GSharp
             }
 
             return result;
+        }
+
+        public void Load(string _path)
+        {
+            //ToDo: Add lazy loading of gcode files to reduce RAM usage
+
+            Commands = new List<Command>();
+            using (FileStream fs = File.Open(_path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (BufferedStream bs = new BufferedStream(fs))
+            using (StreamReader sr = new StreamReader(bs))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    Commands.Add(Gcode.ParseLine(line));
+                }
+            }
+
+            SourcePath = _path;
+            Index = 0;
+            Progress = 0;
         }
     }
 }

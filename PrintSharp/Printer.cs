@@ -22,7 +22,10 @@ namespace PrintSharp
 
         public bool IsConnected
         {
-            get { return serialPort.IsOpen; }
+            get
+            {
+                if (serialPort != null) { return serialPort.IsOpen; } else return false;
+            }
             set
             {
                 if (value) { Connect(); }
@@ -87,6 +90,27 @@ namespace PrintSharp
             {
                 string command = _command.GetClean();
                 serialPort.WriteLine(command);
+            }
+        }
+
+        public void Print()
+        {
+            if (Job == null) { return; }
+
+            while (true)
+            {
+                Command command = Job.GetNextCommand();
+                //command.Debug = true;
+                if (command.Code != null)
+                {
+                    Console.WriteLine(command.ToString());
+                    Send(command);
+                    WaitFor("ok 0", 1000);  //ToDo: Make printing and waiting non-blocking. FSM?
+                }
+                else
+                {
+                    Console.WriteLine("Skipping: " + command.Text);
+                }
             }
         }
 
