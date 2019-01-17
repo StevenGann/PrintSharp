@@ -33,11 +33,62 @@ namespace PrintSharp
             }
         }
 
+        public bool Printing
+        {
+            set
+            {
+                if (!printing) { startJob(); }
+                else { pauseJob(); }
+                printing = value;
+            }
+            get { return printing; }
+        }
+
         public Job Job = null;
+        public int BufferSize = 16;
 
         private string port = null;
         private int baud = 115200;
         private SerialPort serialPort = null;
+        private bool printing = false;
+        private bool paused = false;
+        private System.Timers.Timer jobTimer;
+        private int bufferedCommands = 0;
+
+        public void startJob()
+        {
+            jobTimer = new System.Timers.Timer(100);
+            jobTimer.Elapsed += new System.Timers.ElapsedEventHandler(jobTimerElapsed);
+            jobTimer.Start();
+
+        }
+
+        public void pauseJob() { }
+
+        public void endJob() { }
+
+        private void jobTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            while (bufferedCommands < BufferSize)
+            {
+                Command command = Job.GetNextCommand();
+                if (command.Code != null)
+                {
+                    Console.WriteLine(command.ToString());
+                    Send(command);
+                    bufferedCommands++;
+                }
+                else
+                {
+                    Console.WriteLine("Skipping: " + command.Text);
+                }
+            }
+
+            WaitFor("ok 0", 1000);// ToDo: Handle long, long waits like heating
+            // Waiting for command responses needs to be handled differently.
+            // Do all commands return an "ok" after executing?
+
+        }
 
         public void Connect()
         {
@@ -97,20 +148,9 @@ namespace PrintSharp
         {
             if (Job == null) { return; }
 
-            while (true)
+            if (!printing)
             {
-                Command command = Job.GetNextCommand();
-                //command.Debug = true;
-                if (command.Code != null)
-                {
-                    Console.WriteLine(command.ToString());
-                    Send(command);
-                    WaitFor("ok 0", 1000);  //ToDo: Make printing and waiting non-blocking. FSM?
-                }
-                else
-                {
-                    Console.WriteLine("Skipping: " + command.Text);
-                }
+                startJob();
             }
         }
 
@@ -142,5 +182,6 @@ namespace PrintSharp
                 if (!done) { throw new Exception("Wait for token \"" + _token + "\" timed out"); }
             }
         }
+
     }
 }
