@@ -16,22 +16,13 @@ using System.Windows.Shapes;
 namespace PrintSharp
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PrinterManualControls.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PrinterManualControls : UserControl
     {
-        private Printer printer = new Printer();
-
-        public MainWindow()
+        public PrinterManualControls()
         {
             InitializeComponent();
-
-            /*printer.Job = new GSharp.Job();
-            printer.Job.Load(@"C:\Users\cadik\Desktop\CFFFP_Warp_Reaction_Chamber.gcode");
-
-            printer.Port = "COM3";
-
-            printer.Print();*/
         }
     }
 }

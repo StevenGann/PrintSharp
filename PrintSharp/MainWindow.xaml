@@ -15,5 +15,6 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <local:PrinterManualControls Width="256" Height="256"></local:PrinterManualControls>
     </Grid>
 </Window>
